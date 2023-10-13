@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from configs import get_config
+from database import engine
+from models import BaseList
 from helpers import response_parser
 from api.v1 import api
 
@@ -14,6 +16,9 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+for base in BaseList:
+    base.metadata.create_all(engine.db_engine)
 
 env_variables = get_config.get_settings()
 
