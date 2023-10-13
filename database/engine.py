@@ -1,7 +1,11 @@
+import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from configs import get_config
+from helpers import response_parser
+
+logger = logging.getLogger(__name__)
 
 env_variables = get_config.get_settings()
 
@@ -19,6 +23,9 @@ def get_db():
         db = session()
         yield db
     except Exception as err:
-        print("Unable to Get a DB Connection")
+        logger.error("Error occurred in get_db: %s", err, exc_info=True)
+        raise response_parser.generate_response(
+            code=500, message="Error Occurred in Connection", success=False
+        )
     finally:
         db.close()
